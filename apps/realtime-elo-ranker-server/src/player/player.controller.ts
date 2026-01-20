@@ -1,15 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
-import { UpdatePlayerDto } from './dto/update-player.dto';
 
 @Controller('player')
 export class PlayerController {
@@ -17,26 +8,27 @@ export class PlayerController {
 
   @Post()
   create(@Body() createPlayerDto: CreatePlayerDto) {
-    return this.playerService.create(createPlayerDto);
+    const player = this.playerService.create(createPlayerDto);
+    return {
+      id: player.id,
+      rank: player.elo,
+    };
   }
 
   @Get()
   findAll() {
-    return this.playerService.findAll();
+    return this.playerService.findAll().map((p) => ({
+      id: p.id,
+      rank: p.elo,
+    }));
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.playerService.findOne(id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlayerDto: UpdatePlayerDto) {
-    return this.playerService.update(id, updatePlayerDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.playerService.remove(id);
+    const player = this.playerService.findOne(id);
+    return {
+      id: player.id,
+      rank: player.elo,
+    };
   }
 }

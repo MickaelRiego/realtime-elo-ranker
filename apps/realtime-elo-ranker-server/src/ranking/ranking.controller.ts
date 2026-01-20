@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Sse,
-  MessageEvent,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller, Get, Sse, MessageEvent } from '@nestjs/common';
 import { EloService } from '../elo/elo.service';
 import { map, Observable } from 'rxjs';
 
@@ -16,12 +10,6 @@ export class RankingController {
   @Get()
   getRanking() {
     const ranking = this.eloService.getRanking();
-    if (!ranking || ranking.length === 0) {
-      throw new NotFoundException({
-        code: 404,
-        message: "Le classement n'est pas disponible car aucun joueur n'existe",
-      });
-    }
 
     return ranking.map((p) => ({
       id: p.id.toString(),

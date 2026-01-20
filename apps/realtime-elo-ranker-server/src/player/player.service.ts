@@ -31,6 +31,9 @@ export class PlayerService {
 
     this.players.push(newPlayer);
     this.eloService.updateRanking(this.players);
+
+    this.eloService.emitUpdate(newPlayer);
+
     return newPlayer;
   }
 
