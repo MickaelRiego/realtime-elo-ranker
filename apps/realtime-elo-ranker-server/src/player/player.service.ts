@@ -1,8 +1,9 @@
 // apps/realtime-elo-ranker-server/src/player/player.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Player } from './entities/player.entity';
 import { EloService } from '../elo/elo.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
+import { UpdatePlayerDto } from './dto/update-player.dto';
 
 @Injectable()
 export class PlayerService {
@@ -12,7 +13,6 @@ export class PlayerService {
   constructor(private readonly eloService: EloService) {}
 
   create(createPlayerDto: CreatePlayerDto) {
-    // moyenne des rangs existants ou 1200
     const initialElo =
       this.players.length > 0
         ? Math.round(
@@ -21,9 +21,11 @@ export class PlayerService {
           )
         : 1200;
 
+    const newId = (this.idCounter++).toString();
+
     const newPlayer: Player = {
-      id: createPlayerDto.id || `${this.idCounter - 1}`,
-      username: createPlayerDto.username || `Joueur ${this.idCounter - 1}`,
+      id: createPlayerDto.id || newId,
+      username: createPlayerDto.username || `Joueur ${newId}`,
       elo: initialElo,
     };
 
@@ -37,10 +39,24 @@ export class PlayerService {
   }
 
   findOne(id: string) {
-    return this.players.find((p) => p.id === id);
+    const player = this.players.find((p) => p.id === id);
+    if (!player) {
+      throw new NotFoundException(`Joueur avec l'ID ${id} non trouvé`);
+    }
+    return player;
   }
 
-  update(id: string, elo: number) {
+  update(id: string, updatePlayerDto: UpdatePlayerDto) {
+    const player = this.findOne(id);
+    if (updatePlayerDto.username) {
+      player.username = updatePlayerDto.username;
+    }
+
+    return player;
+  }
+
+  // Méthode spécifique utilisée par MatchService pour mettre à jour le score
+  updateElo(id: string, elo: number) {
     const player = this.players.find((p) => p.id === id);
     if (player) {
       player.elo = elo;
@@ -51,6 +67,12 @@ export class PlayerService {
   }
 
   remove(id: string) {
-    this.players.find((p) => p.id === id); // TODO
+    const index = this.players.findIndex((p) => p.id === id);
+    if (index === -1) {
+      throw new NotFoundException(`Joueur avec l'ID ${id} non trouvé`);
+    }
+    const removedPlayer = this.players.splice(index, 1)[0];
+    this.eloService.updateRanking(this.players);
+    return removedPlayer;
   }
 }
