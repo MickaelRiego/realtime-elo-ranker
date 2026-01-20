@@ -8,6 +8,7 @@ import { CreateMatchDto } from './dto/create-match.dto';
 import { PlayerService } from '../player/player.service';
 import { EloService } from '../elo/elo.service';
 import { Match } from './entities/match.entity';
+import { UpdateMatchDto } from './dto/update-match.dto';
 
 @Injectable()
 export class MatchService {
@@ -89,7 +90,7 @@ export class MatchService {
     return match;
   }
 
-  update() {
+  update(_id: number, _updateMatchDto: UpdateMatchDto) {
     throw new UnprocessableEntityException(
       "La modification de match est interdite pour garantir l'intégrité du classement Elo.",
     );
@@ -100,7 +101,6 @@ export class MatchService {
     if (index === -1) {
       throw new NotFoundException(`Match avec l'ID ${id} non trouvé`);
     }
-    // On supprime simplement le match de l'historique sans recalculer les Elo (simplification)
     const removed = this.matches.splice(index, 1);
     return removed[0];
   }
