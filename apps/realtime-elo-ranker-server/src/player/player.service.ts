@@ -1,8 +1,8 @@
+// apps/realtime-elo-ranker-server/src/player/player.service.ts
 import { Injectable } from '@nestjs/common';
-import { CreatePlayerDto } from './dto/create-player.dto';
-import { UpdatePlayerDto } from './dto/update-player.dto';
 import { Player } from './entities/player.entity';
-import { EloService } from 'src/elo/elo.service';
+import { EloService } from '../elo/elo.service';
+import { CreatePlayerDto } from './dto/create-player.dto';
 
 @Injectable()
 export class PlayerService {
@@ -12,16 +12,23 @@ export class PlayerService {
   constructor(private readonly eloService: EloService) {}
 
   create(createPlayerDto: CreatePlayerDto) {
+    // moyenne des rangs existants ou 1200
+    const initialElo =
+      this.players.length > 0
+        ? Math.round(
+            this.players.reduce((acc, p) => acc + p.elo, 0) /
+              this.players.length,
+          )
+        : 1200;
+
     const newPlayer: Player = {
-      id: this.idCounter++,
-      username: createPlayerDto.username || `Joueur ${this.idCounter}`,
-      elo: 1200, // ELO de base
+      id: createPlayerDto.id || `${this.idCounter - 1}`,
+      username: createPlayerDto.username || `Joueur ${this.idCounter - 1}`,
+      elo: initialElo,
     };
+
     this.players.push(newPlayer);
-
-    // On prévient le service de classement qu'il faut mettre à jour
     this.eloService.updateRanking(this.players);
-
     return newPlayer;
   }
 
@@ -29,32 +36,21 @@ export class PlayerService {
     return this.players;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.players.find((p) => p.id === id);
   }
 
-  update(id: number, updatePlayerDto: UpdatePlayerDto) {
-    const playerIndex = this.players.findIndex((p) => p.id === id);
-    if (playerIndex > -1) {
-      // Fusion des données
-      this.players[playerIndex] = {
-        ...this.players[playerIndex],
-        ...updatePlayerDto,
-      };
-      // Mise à jour du classement si l'ELO a changé
+  update(id: string, elo: number) {
+    const player = this.players.find((p) => p.id === id);
+    if (player) {
+      player.elo = elo;
       this.eloService.updateRanking(this.players);
-      return this.players[playerIndex];
+      return player;
     }
     return null;
   }
 
-  remove(id: number) {
-    const index = this.players.findIndex((p) => p.id === id);
-    if (index > -1) {
-      const deleted = this.players.splice(index, 1);
-      this.eloService.updateRanking(this.players);
-      return deleted[0];
-    }
-    return null;
+  remove(id: string) {
+    this.players.find((p) => p.id === id); // TODO
   }
 }
