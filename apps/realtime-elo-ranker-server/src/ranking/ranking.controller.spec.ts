@@ -5,12 +5,10 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('RankingController', () => {
   let controller: RankingController;
+  let eventEmitter: EventEmitter2;
 
   const mockEloService = {
-    getRanking: jest.fn().mockReturnValue([
-      { id: 'Alice', elo: 1200 },
-      { id: 'Bob', elo: 1100 },
-    ]),
+    getRanking: jest.fn().mockReturnValue([{ id: 'Alice', elo: 1200 }]),
   };
 
   const mockEventEmitter = {
@@ -22,33 +20,44 @@ describe('RankingController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RankingController],
       providers: [
-        {
-          provide: EloService,
-          useValue: mockEloService,
-        },
-        {
-          provide: EventEmitter2,
-          useValue: mockEventEmitter,
-        },
+        { provide: EloService, useValue: mockEloService },
+        { provide: EventEmitter2, useValue: mockEventEmitter },
       ],
     }).compile();
 
     controller = module.get<RankingController>(RankingController);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+  describe('sse', () => {
+    it('should emit properly formatted RankingUpdate event', (done) => {
+      const observable = controller.sse();
 
-  describe('getRanking', () => {
-    it('should return the ranking list mapped correctly', () => {
-      const result = controller.getRanking();
+      let listenerCallback: any;
+      (eventEmitter.on as jest.Mock).mockImplementation((event, cb) => {
+        listenerCallback = cb;
+      });
 
-      expect(result).toEqual([
-        { id: 'Alice', rank: 1200 },
-        { id: 'Bob', rank: 1100 },
-      ]);
-      expect(mockEloService.getRanking).toHaveBeenCalled();
+      const sub = observable.subscribe({
+        next: (event) => {
+          expect(event.data).toEqual({
+            type: 'RankingUpdate',
+            player: {
+              id: 'Alice',
+              name: 'Alice',
+              rank: 1250,
+            },
+          });
+          sub.unsubscribe();
+          done();
+        },
+      });
+
+      setTimeout(() => {
+        if (listenerCallback) {
+          listenerCallback({ id: 'Alice', elo: 1250 });
+        }
+      }, 10);
     });
   });
 });

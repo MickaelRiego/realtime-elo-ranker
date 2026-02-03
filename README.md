@@ -1,47 +1,96 @@
 # Rapport TP
 
+
+## Comment lancer
+
+### Prérequis
+
+    Installer les dépendances :
+    Bash
+
+    pnpm install
+
+    Construire la librairie UI (nécessaire pour le frontend) :
+    Bash
+
+    pnpm run libs:ui:build
+
+### Démarrage Rapide
+
+Vous pouvez lancer les différentes parties de l'application depuis la racine du projet :
+
+1. Lancer le Serveur (Backend NestJS) :
+```Bash
+
+pnpm run apps:server:dev
+```
+Le serveur sera accessible sur http://localhost:8080.
+
+
+2. Lancer le Client (Frontend Next.js) :
+```Bash
+
+pnpm run apps:client:dev
+```
+L'interface sera accessible sur http://localhost:3000.
+
+
+### Tests et Qualité
+
+Lancer les tests unitaires (avec rapport de couverture)
+```Bash
+pnpm run apps:server:cov
+```
+
+Lancer les tests End-to-End (E2E)
+```bash
+pnpm run apps:server:e2e
+```
+
+Le tout à lancer depuis la racine du projet.
+
 ## Rapport de coverage
 
- PASS  src/ranking/ranking.controller.spec.ts (5.379 s)  
- PASS  src/elo/elo.service.spec.ts (5.262 s)  
- PASS  src/app.controller.spec.ts (5.269 s)  
- PASS  src/player/player.controller.spec.ts (7.181 s)  
- PASS  src/match/match.controller.spec.ts (7.311 s)  
- PASS  src/player/player.service.spec.ts (7.198 s)  
- PASS  src/match/match.service.spec.ts (7.334 s)  
-
-
-
+```bash
+ PASS  src/match/match.controller.spec.ts (8.861 s)
+ PASS  src/player/player.controller.spec.ts (8.85 s)
+ PASS  src/player/player.service.spec.ts (8.81 s)
+ PASS  src/match/match.service.spec.ts (8.923 s)
+------------------------|---------|----------|---------|---------|-------------------
 File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 ------------------------|---------|----------|---------|---------|-------------------
-All files               |   83.07 |    77.27 |   78.57 |   82.55 |                   
- src                    |    47.5 |    56.25 |   85.71 |   47.22 |                   
-  app.controller.ts     |     100 |       75 |     100 |     100 | 9-21              
-  app.module.ts         |       0 |        0 |     100 |       0 | 1-33              
-  main.ts               |       0 |        0 |       0 |       0 | 1-14              
- src/elo                |     100 |       75 |     100 |     100 |                   
-  elo.service.ts        |     100 |       75 |     100 |     100 | 10                
- src/match              |   96.07 |    85.29 |    87.5 |   95.74 |                   
-  match.controller.ts   |      80 |       75 |      50 |      75 | 11-12             
-  match.service.ts      |     100 |    88.46 |     100 |     100 | 21-22             
- src/match/dto          |     100 |      100 |     100 |     100 |                   
+All files               |   93.49 |    81.57 |    87.8 |   93.24 |                   
+ src                    |    92.3 |       75 |   66.66 |   88.88 |                   
+  app.controller.ts     |     100 |       75 |     100 |     100 | 6                 
+  app.service.ts        |      80 |      100 |       0 |   66.66 | 6                 
+ src/elo                |   94.44 |       75 |    87.5 |   93.33 |                   
+  elo.service.ts        |   94.44 |       75 |    87.5 |   93.33 | 8                 
+ src/match              |     100 |    85.29 |     100 |     100 |                   
+  match.controller.ts   |     100 |       75 |     100 |     100 | 7-10              
+  match.service.ts      |     100 |    88.46 |     100 |     100 | 18-19             
+ src/match/dto          |      25 |      100 |     100 |      25 |                   
   create-match.dto.ts   |     100 |      100 |     100 |     100 |                   
- src/match/entities     |     100 |       75 |     100 |     100 |                   
-  match.entity.ts       |     100 |       75 |     100 |     100 | 18                
- src/player             |   85.71 |    81.81 |   66.66 |   86.27 |                   
-  player.controller.ts  |   58.82 |       75 |      20 |   57.14 | 11-12,20-21,29-30 
-  player.service.ts     |   97.43 |    85.71 |      90 |   97.29 | 65                
- src/player/dto         |     100 |      100 |     100 |     100 |                   
+  update-match.dto.ts   |       0 |      100 |     100 |       0 | 1-4               
+ src/player             |   98.21 |    81.81 |   93.33 |      98 |                   
+  player.controller.ts  |     100 |       75 |     100 |     100 | 7-10              
+  player.service.ts     |   97.43 |    85.71 |      90 |   97.22 | 62                
+ src/player/dto         |      25 |      100 |     100 |      25 |                   
   create-player.dto.ts  |     100 |      100 |     100 |     100 |                   
- src/player/entities    |     100 |      100 |     100 |     100 |                   
-  player.entity.ts      |     100 |      100 |     100 |     100 |                   
- src/ranking            |   85.71 |       75 |      60 |   81.81 |                   
-  ranking.controller.ts |   85.71 |       75 |      60 |   81.81 | 23-24             
+  update-player.dto.ts  |       0 |      100 |     100 |       0 | 1-4               
+ src/ranking            |    90.9 |       75 |   71.42 |   94.73 |                   
+  ranking.controller.ts |    90.9 |       75 |   71.42 |   94.73 | 15                
+------------------------|---------|----------|---------|---------|-------------------
 
 Test Suites: 7 passed, 7 total
-Tests:       30 passed, 30 total
+Tests:       29 passed, 29 total
 Snapshots:   0 total
-Time:        11.334 s
+Time:        12.608 s
+Ran all test suites.
+```
+
+---
+---
+---
 
 
 # Realtime Elo Ranker

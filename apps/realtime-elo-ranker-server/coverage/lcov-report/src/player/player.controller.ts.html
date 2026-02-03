@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.82% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/17</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.14% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/14</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -104,21 +104,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -126,8 +117,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -142,27 +142,27 @@ export class PlayerController {
   constructor(private readonly playerService: PlayerService<span class="branch-1 cbranch-no" title="branch not covered" >) {}</span>
 &nbsp;
   @Post()
-  async <span class="fstat-no" title="function not covered" >create(</span>@Body() createPlayerDto: CreatePlayerDto<span class="branch-1 cbranch-no" title="branch not covered" >) {</span>
-    const player = <span class="cstat-no" title="statement not covered" >await this.playerService.create(createPlayerDto);</span>
-<span class="cstat-no" title="statement not covered" >    return {</span>
+  async create(@Body() createPlayerDto: CreatePlayerDto<span class="branch-1 cbranch-no" title="branch not covered" >) {</span>
+    const player = await this.playerService.create(createPlayerDto);
+    return {
       id: player.id,
       rank: player.elo,
     };
   }
 &nbsp;
   @Get()
-  async <span class="fstat-no" title="function not covered" >findAll(</span>) {
-    const players = <span class="cstat-no" title="statement not covered" >await this.playerService.findAll();</span>
-<span class="cstat-no" title="statement not covered" >    return players.map(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+  async findAll() {
+    const players = await this.playerService.findAll();
+    return players.map((p) =&gt; ({
       id: p.id,
       rank: p.elo,
     }));
   }
 &nbsp;
   @Get(':id')
-  async <span class="fstat-no" title="function not covered" >findOne(</span>@Param('id') id: string) {
-    const player = <span class="cstat-no" title="statement not covered" >await this.playerService.findOne(id);</span>
-<span class="cstat-no" title="statement not covered" >    return {</span>
+  async findOne(@Param('id') id: string) {
+    const player = await this.playerService.findOne(id);
+    return {
       id: player.id,
       rank: player.elo,
     };
@@ -175,7 +175,7 @@ export class PlayerController {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-27T17:16:09.681Z
+                at 2026-02-03T15:24:52.856Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

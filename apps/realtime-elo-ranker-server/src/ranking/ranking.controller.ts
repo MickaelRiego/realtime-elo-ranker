@@ -14,6 +14,7 @@ export class RankingController {
   getRanking() {
     return this.eloService.getRanking().map((p) => ({
       id: p.id,
+      name: p.id,
       rank: p.elo,
     }));
   }
@@ -21,23 +22,29 @@ export class RankingController {
   @Sse('events')
   sse(): Observable<MessageEvent> {
     return new Observable((observer) => {
-      const currentRanking = this.eloService.getRanking().map((p) => ({
-        id: p.id,
-        rank: p.elo,
-      }));
+      // Pour debug
+      console.log('SSE: Connexion client établie');
 
-      observer.next({
-        data: { type: 'RankingUpdate', players: currentRanking },
-      } as MessageEvent);
+      const listener = (player: any) => {
+        console.log(`SSE: Envoi update pour ${player.id}`);
+        const payload = {
+          type: 'RankingUpdate',
+          player: {
+            id: player.id,
+            name: player.id,
+            rank: player.elo,
+          },
+        };
 
-      const listener = (eventData: any) => {
-        observer.next({ data: eventData } as MessageEvent);
+        observer.next({
+          data: payload,
+        } as MessageEvent);
       };
 
-      this.eventEmitter.on('ranking.update', listener);
+      this.eventEmitter.on('player.update', listener);
 
       return () => {
-        this.eventEmitter.removeListener('ranking.update', listener);
+        this.eventEmitter.removeListener('player.update', listener);
       };
     });
   }

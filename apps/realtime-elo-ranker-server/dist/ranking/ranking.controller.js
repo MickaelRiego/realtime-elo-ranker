@@ -24,24 +24,30 @@ let RankingController = class RankingController {
     getRanking() {
         return this.eloService.getRanking().map((p) => ({
             id: p.id,
+            name: p.id,
             rank: p.elo,
         }));
     }
     sse() {
         return new rxjs_1.Observable((observer) => {
-            const currentRanking = this.eloService.getRanking().map((p) => ({
-                id: p.id,
-                rank: p.elo,
-            }));
-            observer.next({
-                data: { type: 'RankingUpdate', players: currentRanking },
-            });
-            const listener = (eventData) => {
-                observer.next({ data: eventData });
+            console.log('✅ SSE: Connexion client établie');
+            const listener = (player) => {
+                console.log(`🔔 SSE: Envoi update pour ${player.id}`);
+                const payload = {
+                    type: 'RankingUpdate',
+                    player: {
+                        id: player.id,
+                        name: player.id,
+                        rank: player.elo,
+                    },
+                };
+                observer.next({
+                    data: payload,
+                });
             };
-            this.eventEmitter.on('ranking.update', listener);
+            this.eventEmitter.on('player.update', listener);
             return () => {
-                this.eventEmitter.removeListener('ranking.update', listener);
+                this.eventEmitter.removeListener('player.update', listener);
             };
         });
     }

@@ -8,6 +8,7 @@ export declare class RankingController {
     constructor(eloService: EloService, eventEmitter: EventEmitter2);
     getRanking(): {
         id: string;
+        name: string;
         rank: number;
     }[];
     sse(): Observable<MessageEvent>;
