@@ -5,10 +5,19 @@ import { MatchService } from './match.service';
 describe('MatchController', () => {
   let controller: MatchController;
 
+  const mockMatchService = {
+    create: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MatchController],
-      providers: [MatchService],
+      providers: [
+        {
+          provide: MatchService,
+          useValue: mockMatchService,
+        },
+      ],
     }).compile();
 
     controller = module.get<MatchController>(MatchController);

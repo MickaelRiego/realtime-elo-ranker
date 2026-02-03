@@ -7,8 +7,8 @@ export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
   @Post()
-  create(@Body() createPlayerDto: CreatePlayerDto) {
-    const player = this.playerService.create(createPlayerDto);
+  async create(@Body() createPlayerDto: CreatePlayerDto) {
+    const player = await this.playerService.create(createPlayerDto);
     return {
       id: player.id,
       rank: player.elo,
@@ -16,16 +16,17 @@ export class PlayerController {
   }
 
   @Get()
-  findAll() {
-    return this.playerService.findAll().map((p) => ({
+  async findAll() {
+    const players = await this.playerService.findAll();
+    return players.map((p) => ({
       id: p.id,
       rank: p.elo,
     }));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    const player = this.playerService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const player = await this.playerService.findOne(id);
     return {
       id: player.id,
       rank: player.elo,

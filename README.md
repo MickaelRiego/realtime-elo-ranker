@@ -1,3 +1,49 @@
+# Rapport TP
+
+## Rapport de coverage
+
+ PASS  src/ranking/ranking.controller.spec.ts (5.379 s)  
+ PASS  src/elo/elo.service.spec.ts (5.262 s)  
+ PASS  src/app.controller.spec.ts (5.269 s)  
+ PASS  src/player/player.controller.spec.ts (7.181 s)  
+ PASS  src/match/match.controller.spec.ts (7.311 s)  
+ PASS  src/player/player.service.spec.ts (7.198 s)  
+ PASS  src/match/match.service.spec.ts (7.334 s)  
+
+
+
+File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------------------|---------|----------|---------|---------|-------------------
+All files               |   83.07 |    77.27 |   78.57 |   82.55 |                   
+ src                    |    47.5 |    56.25 |   85.71 |   47.22 |                   
+  app.controller.ts     |     100 |       75 |     100 |     100 | 9-21              
+  app.module.ts         |       0 |        0 |     100 |       0 | 1-33              
+  main.ts               |       0 |        0 |       0 |       0 | 1-14              
+ src/elo                |     100 |       75 |     100 |     100 |                   
+  elo.service.ts        |     100 |       75 |     100 |     100 | 10                
+ src/match              |   96.07 |    85.29 |    87.5 |   95.74 |                   
+  match.controller.ts   |      80 |       75 |      50 |      75 | 11-12             
+  match.service.ts      |     100 |    88.46 |     100 |     100 | 21-22             
+ src/match/dto          |     100 |      100 |     100 |     100 |                   
+  create-match.dto.ts   |     100 |      100 |     100 |     100 |                   
+ src/match/entities     |     100 |       75 |     100 |     100 |                   
+  match.entity.ts       |     100 |       75 |     100 |     100 | 18                
+ src/player             |   85.71 |    81.81 |   66.66 |   86.27 |                   
+  player.controller.ts  |   58.82 |       75 |      20 |   57.14 | 11-12,20-21,29-30 
+  player.service.ts     |   97.43 |    85.71 |      90 |   97.29 | 65                
+ src/player/dto         |     100 |      100 |     100 |     100 |                   
+  create-player.dto.ts  |     100 |      100 |     100 |     100 |                   
+ src/player/entities    |     100 |      100 |     100 |     100 |                   
+  player.entity.ts      |     100 |      100 |     100 |     100 |                   
+ src/ranking            |   85.71 |       75 |      60 |   81.81 |                   
+  ranking.controller.ts |   85.71 |       75 |      60 |   81.81 | 23-24             
+
+Test Suites: 7 passed, 7 total
+Tests:       30 passed, 30 total
+Snapshots:   0 total
+Time:        11.334 s
+
+
 # Realtime Elo Ranker
 
 Realtime Elo Ranker est une application web permettant de simuler des matchs entre des joueurs et de calculer et afficher leur classement Elo en temps réel.

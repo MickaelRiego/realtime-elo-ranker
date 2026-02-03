@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { Subject, Observable } from 'rxjs';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Player } from '../player/entities/player.entity';
 
 @Injectable()
 export class EloService {
-  private readonly K_FACTOR = 32; // Coefficient de pondération
+  getRankingEvents() {
+    throw new Error('Method not implemented.');
+  }
+  private readonly K_FACTOR = 32;
   private ranking: Player[] = [];
-  private rankingSubject = new Subject<Player>();
 
-  // Calcule la probabilité de victoire (We)
+  constructor(private eventEmitter: EventEmitter2) {}
+
   calculateExpectedScore(ratingPlayer: number, ratingOpponent: number): number {
     const diff = ratingOpponent - ratingPlayer;
     return 1 / (1 + Math.pow(10, diff / 400));
   }
 
-  // Calcule le nouveau classement (Rn)
   calculateNewRating(
     currentRating: number,
     actualScore: number,
@@ -27,6 +29,10 @@ export class EloService {
 
   updateRanking(players: Player[]) {
     this.ranking = [...players].sort((a, b) => b.elo - a.elo);
+    this.eventEmitter.emit('ranking.update', {
+      type: 'RankingUpdate',
+      players: this.ranking,
+    });
   }
 
   getRanking(): Player[] {
@@ -34,10 +40,6 @@ export class EloService {
   }
 
   emitUpdate(player: Player) {
-    this.rankingSubject.next(player);
-  }
-
-  getRankingEvents(): Observable<Player> {
-    return this.rankingSubject.asObservable();
+    this.eventEmitter.emit('player.update', player);
   }
 }

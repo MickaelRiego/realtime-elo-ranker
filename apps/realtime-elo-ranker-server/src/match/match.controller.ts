@@ -7,8 +7,8 @@ export class MatchController {
   constructor(private readonly matchService: MatchService) {}
 
   @Post()
-  create(@Body() createMatchDto: CreateMatchDto) {
-    const result = this.matchService.create(createMatchDto);
+  async create(@Body() createMatchDto: CreateMatchDto) {
+    const result = await this.matchService.create(createMatchDto);
     return {
       winner: result.winner,
       loser: result.loser,

@@ -18,5 +18,8 @@
     "motion": "catalog:",
     "next": "catalog:",
     "typescript": "catalog:"
+  },
+  "dependencies": {
+    "sql.js": "^1.13.0"
   }
 }

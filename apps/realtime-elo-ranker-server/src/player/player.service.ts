@@ -1,81 +1,90 @@
-// apps/realtime-elo-ranker-server/src/player/player.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Player } from './entities/player.entity';
 import { EloService } from '../elo/elo.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
-import { UpdatePlayerDto } from './dto/update-player.dto';
+// SUPPRESSION DE LA LIGNE IMPORT UPDATE-PLAYER
 
 @Injectable()
-export class PlayerService {
-  private players: Player[] = [];
-  private idCounter = 1;
+export class PlayerService implements OnModuleInit {
+  constructor(
+    @InjectRepository(Player)
+    private readonly playerRepository: Repository<Player>,
+    private readonly eloService: EloService,
+  ) {}
 
-  constructor(private readonly eloService: EloService) {}
+  async onModuleInit() {
+    await this.syncRanking();
+  }
 
-  create(createPlayerDto: CreatePlayerDto) {
+  async syncRanking() {
+    const allPlayers = await this.playerRepository.find();
+    this.eloService.updateRanking(allPlayers);
+  }
+
+  async create(createPlayerDto: CreatePlayerDto) {
+    const existing = await this.playerRepository.findOneBy({
+      id: createPlayerDto.id,
+    });
+    if (existing) {
+      throw new ConflictException(
+        `Le joueur '${createPlayerDto.id}' existe déjà.`,
+      );
+    }
+
+    const players = await this.playerRepository.find();
     const initialElo =
-      this.players.length > 0
+      players.length > 0
         ? Math.round(
-            this.players.reduce((acc, p) => acc + p.elo, 0) /
-              this.players.length,
+            players.reduce((acc, p) => acc + p.elo, 0) / players.length,
           )
         : 1200;
 
-    const newId = (this.idCounter++).toString();
-
-    const newPlayer: Player = {
-      id: createPlayerDto.id || newId,
-      username: createPlayerDto.username || `Joueur ${newId}`,
+    const newPlayer = this.playerRepository.create({
+      id: createPlayerDto.id,
       elo: initialElo,
-    };
+    });
 
-    this.players.push(newPlayer);
-    this.eloService.updateRanking(this.players);
+    const savedPlayer = await this.playerRepository.save(newPlayer);
+    await this.syncRanking();
+    this.eloService.emitUpdate(savedPlayer);
 
-    this.eloService.emitUpdate(newPlayer);
-
-    return newPlayer;
+    return savedPlayer;
   }
 
-  findAll() {
-    return this.players;
+  async findAll() {
+    return this.playerRepository.find();
   }
 
-  findOne(id: string) {
-    const player = this.players.find((p) => p.id === id);
-    if (!player) {
-      throw new NotFoundException(`Joueur avec l'ID ${id} non trouvé`);
-    }
+  async findOne(id: string) {
+    const player = await this.playerRepository.findOneBy({ id });
+    if (!player) throw new NotFoundException(`Joueur '${id}' non trouvé`);
     return player;
   }
 
-  update(id: string, updatePlayerDto: UpdatePlayerDto) {
-    const player = this.findOne(id);
-    if (updatePlayerDto.username) {
-      player.username = updatePlayerDto.username;
-    }
-
-    return player;
+  // CORRECTION : utilisation de 'any'
+  async update(id: string, _updatePlayerDto: any) {
+    return this.findOne(id);
   }
 
-  // Méthode spécifique utilisée par MatchService pour mettre à jour le score
-  updateElo(id: string, elo: number) {
-    const player = this.players.find((p) => p.id === id);
-    if (player) {
-      player.elo = elo;
-      this.eloService.updateRanking(this.players);
-      return player;
-    }
-    return null;
+  async updateElo(id: string, elo: number) {
+    const player = await this.findOne(id);
+    player.elo = elo;
+    const saved = await this.playerRepository.save(player);
+    await this.syncRanking();
+    return saved;
   }
 
-  remove(id: string) {
-    const index = this.players.findIndex((p) => p.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Joueur avec l'ID ${id} non trouvé`);
-    }
-    const removedPlayer = this.players.splice(index, 1)[0];
-    this.eloService.updateRanking(this.players);
-    return removedPlayer;
+  async remove(id: string) {
+    const player = await this.findOne(id);
+    const removed = await this.playerRepository.remove(player);
+    await this.syncRanking();
+    return removed;
   }
 }
